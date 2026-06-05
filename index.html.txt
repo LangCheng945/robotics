@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全國高級中等學校技藝競賽 模擬測驗系統 | HCVS</title>
+    <style>
+        :root {
+            /* 建議可以將這裡改成 HCVS 的學校代表色 */
+            --primary-color: #003366; 
+            --accent-color: #f39c12; /* 點綴色：金黃色代表金手獎 */
+            --bg-color: #f4f7f6;
+            --paper-color: #ffffff;
+            --text-color: #333333;
+            --correct-color: #28a745;
+            --wrong-color: #dc3545;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        h2.subtitle {
+            color: var(--accent-color);
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 0;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: var(--paper-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border-top: 4px solid var(--primary-color);
+        }
+        .setup-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-top: none; /* 覆蓋預設的上方邊框 */
+        }
+        input[type="number"] {
+            padding: 8px;
+            width: 80px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #002244;
+        }
+        .question-block {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ccc;
+        }
+        .question-text {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .options label:hover {
+            background-color: #e9ecef;
+        }
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+        .result-msg {
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .correct { background-color: #d4edda; color: var(--correct-color); border-left: 4px solid var(--correct-color); }
+        .wrong { background-color: #f8d7da; color: var(--wrong-color); border-left: 4px solid var(--wrong-color); }
+        #scoreBoard {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: none;
+        }
+        #quizContainer { display: none; }
+    </style>
+</head>
+<body>
+
+    <h1>🏆 全國高級中等學校技藝競賽 模擬測驗</h1>
+    <h2 class="subtitle">HCVS 選手專屬備戰平台 • 邁向金手獎</h2>
+
+    <div class="card setup-section" id="setupSection">
+        <label for="numQuestions">請選擇本次訓練要抽取的題數：</label>
+        <input type="number" id="numQuestions" value="20" min="1">
+        <button onclick="startQuiz()">開始特訓</button>
+    </div>
+
+    <div class="card" id="scoreBoard"></div>
+
+    <div class="card" id="quizContainer">
+        <div id="questionsList"></div>
+        <button id="submitBtn" onclick="submitQuiz()" style="width: 100%; margin-top: 20px; font-size: 1.2em; background-color: var(--accent-color); color: #fff;">交卷並計算分數</button>
+        <button id="retryBtn" onclick="location.reload()" style="width: 100%; margin-top: 10px; background-color: #6c757d; display: none;">重新開始新的一局</button>
+    </div>
+
+    <script>
+        // ---------------------------------------------------------
+        // 👇 題庫建檔區 👇
+        // 請將技藝競賽的歷屆試題依照下方格式放入
+        // ans 代表正確答案的索引值 (0=A, 1=B, 2=C, 3=D)
+        // ---------------------------------------------------------
+        const questionBank = [
+            {
+                q: "1. (範例題) 在工業配線中，綠色導線通常代表什麼功能？",
+                options: ["(A) 火線", "(B) 設備接地線", "(C) 中性線", "(D) 控制線"],
+                ans: 1 
+            },
+            {
+                q: "2. (範例題) 三相感應電動機若要改變旋轉方向，應如何處理？",
+                options: ["(A) 降低輸入電壓", "(B) 任意對調其中兩條電源線", "(C) 增加啟動電阻", "(D) 改變電源頻率"],
+                ans: 1
+            },
+            // ... 請將您的 HCVS 競賽題庫依此格式繼續往下貼 ...
+        ];
+
+        let currentQuiz = [];
+
+        function startQuiz() {
+            let num = parseInt(document.getElementById('numQuestions').value);
+            if (num > questionBank.length) {
+                alert(`目前題庫只有 ${questionBank.length} 題，已為您調整為最大題數。`);
+                num = questionBank.length;
+            }
+            if (num < 1 || isNaN(num)) {
+                alert("請輸入有效的題數！");
+                return;
+            }
+
+            document.getElementById('setupSection').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'block';
+
+            // Fisher-Yates 隨機抽題
+            let shuffled = [...questionBank].sort(() => 0.5 - Math.random());
+            currentQuiz = shuffled.slice(0, num);
+
+            renderQuestions();
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsList');
+            container.innerHTML = '';
+
+            currentQuiz.forEach((item, index) => {
+                let optionsHtml = '';
+                item.options.forEach((opt, optIndex) => {
+                    optionsHtml += `
+                        <label id="label-q${index}-opt${optIndex}">
+                            <input type="radio" name="q${index}" value="${optIndex}">
+                            ${opt}
+                        </label>
+                    `;
+                });
+
+                const questionHtml = `
+                    <div class="question-block" id="qBlock${index}">
+                        <div class="question-text">第 ${index + 1} 題：${item.q}</div>
+                        <div class="options">
+                            ${optionsHtml}
+                        </div>
+                        <div class="result-msg" id="msg${index}"></div>
+                    </div>
+                `;
+                container.innerHTML += questionHtml;
+            });
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            let answeredAll = true;
+
+            currentQuiz.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (!selected) {
+                    answeredAll = false;
+                }
+            });
+
+            if (!answeredAll) {
+                if (!confirm("⚠️ 您還有未作答的題目，確定要提早交卷嗎？")) {
+                    return;
+                }
+            }
+
+            currentQuiz.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const msgDiv = document.getElementById(`msg${index}`);
+                const correctAnsText = item.options[item.ans];
+                
+                const radios = document.querySelectorAll(`input[name="q${index}"]`);
+                radios.forEach(radio => radio.disabled = true);
+
+                msgDiv.style.display = 'block';
+
+                if (selected && parseInt(selected.value) === item.ans) {
+                    score++;
+                    msgDiv.innerHTML = "✅ 答對了！";
+                    msgDiv.className = "result-msg correct";
+                } else {
+                    const userAnsText = selected ? item.options[parseInt(selected.value)] : "未作答";
+                    msgDiv.innerHTML = `❌ 答錯了！您的答案：${userAnsText}，<br>👉 <strong>正確解答應為：${correctAnsText}</strong>`;
+                    msgDiv.className = "result-msg wrong";
+                }
+            });
+
+            const totalQuestions = currentQuiz.length;
+            const finalScore = Math.round((score / totalQuestions) * 100);
+            const scoreBoard = document.getElementById('scoreBoard');
+            scoreBoard.style.display = 'block';
+            
+            // 依分數給予不同評語
+            let feedback = "";
+            if (finalScore >= 90) feedback = "🌟 太神啦！金手獎非你莫屬！";
+            else if (finalScore >= 70) feedback = "💪 表現不錯！再複習一下錯題就完美了！";
+            else feedback = "📚 沒關係，找出盲點才是模擬測驗的目的，繼續加油！";
+
+            scoreBoard.innerHTML = `測驗結束！您的總得分是：${finalScore} 分 (${score} / ${totalQuestions} 題)<br><span style="font-size: 0.8em; color: #555;">${feedback}</span>`;
+
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('retryBtn').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
