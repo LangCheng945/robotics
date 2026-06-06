@@ -130,7 +130,7 @@
         .bookmark-star { position: absolute; top: 1px; right: 4px; color: #ffc107; font-size: 0.75rem; display: none; }
         .grid-item.bookmarked .bookmark-star { display: block; }
 
-        /*  右側作答區 */
+        /* 右側作答區 */
         .right-panel {
             flex: 1; background: var(--card-bg); border-radius: 8px; padding: 25px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow-y: auto;
@@ -177,7 +177,7 @@
     <div id="setup-screen">
         <div class="setup-header-text">
             <h2 class="setup-title">全國技藝競賽 機器人學即測即評</h2>
-            <p class="setup-subtitle">HCVS 選手專屬備戰平台 • 邁向金手獎 <span class="setup-version">Ver 6.6.258</span></p> 
+            <p class="setup-subtitle">HCVS 選手專屬備戰平台 • 邁向金手獎 <span class="setup-version">Ver 6.6.158</span></p>
         </div>
 
         <div class="setup-bar">
@@ -190,7 +190,7 @@
                 <option value="200">200 題 </option>
             </select>
             <span style="font-weight:bold; color: var(--text-color);">或</span>
-            <input type="number" id="custom-num" class="custom-input" placeholder="自訂題數" min="1" max="258">
+            <input type="number" id="custom-num" class="custom-input" placeholder="自訂題數" min="1" max="158">
             <button class="btn" style="font-size: 1.05rem; padding: 10px 30px; background-color: var(--primary-color);" onclick="startQuiz()">開始特訓</button>
         </div>
         <p style="font-size: 0.85rem; color: #888; margin-top: 20px;">作答進度與計時將全自動即時儲存，重整網頁不遺失。</p>
@@ -202,6 +202,7 @@
             <div class="timer-box" id="timer-display">00:00</div>
             <button class="btn" style="background-color:#6c757d;" onclick="toggleTheme()">切換主題</button>
             <button class="btn" style="background-color:#e28743;" onclick="toggleBookmarkCurrent()">★書籤</button>
+            <button class="btn" style="background-color:#dc3545;" onclick="reportError()">錯誤回報</button>
             <button class="btn" style="background-color:#28a745;" onclick="submitQuiz()">交卷計分</button>
         </div>
     </header>
@@ -233,10 +234,12 @@
     </div>
 
     <footer>
-        HCVS 專屬備戰平台 • 邁向金手獎 <span class="ver-highlight">Ver 6.6.258</span>
+        HCVS 專屬備戰平台 • 邁向金手獎 <span class="ver-highlight">Ver 6.6.158</span>
     </footer>
 
     <script>
+        // 
+       <script>
     // 0605 updated
     const questionBank = [
     { q: "1. 多軸關節式機器人(機器手臂)的特點是高自由度與靈活性...試問下列何者適合以並聯式機器人來開發？", options: ["(A) 汽車板金噴漆", "(B) 食品自動化整列", "(C) 手機外殼去毛邊及拋光", "(D) 汽車底盤焊接"], ans: 1 },
@@ -397,6 +400,7 @@
     { q: "156. 下列敘述何者不正確？", options: ["(A) 並激馬達的電樞和磁場繞組並聯在一起。此型馬達的特色為速度調整功能比串激馬達好", "(B) 串激馬達的電樞和磁場繞組串聯在一起。此型馬達的特色為高起動扭矩及高無負載轉速，但缺乏速度調整", "(C) 控制較大的DC型馬達常用來當成整流及控制的元件是矽控整流器", "(D) PWM的驅動放大器與類比驅動器都是線性的"], ans: 3 },
     { q: "157. 下列敘述何者不正確？", options: ["(A) 四相步進馬達的控制電路不必改變磁場線圈的磁性", "(B) 二相(雙極性)步進馬達不必改變磁場線圈的磁性", "(C) 複激型馬達的電樞和磁場繞組並聯及串聯在一起，擁有串激和並激馬達的特性", "(D) 無刷DC型馬達(brushless DC motor)馬達的運轉非常可靠、有效率及容易控制"], ans: 1 },
     { q: "158. 下列敘述何者不正確？", options: ["(A) 在選用驅動器與步進馬達時，要注意驅動器的驅動電流是否與步進馬達每相所需的驅動電流一致", "(B) 不同大小的馬達需要驅動電壓的大小不同，所以驅動器必須能提供步進馬達足夠的電壓", "(C) 步進馬達長度越長，馬達的扭矩就越大", "(D) 選用內建減速機的馬達與提升步進馬達的扭矩無關"], ans: 3 },
+    // 0606 updated       
     { q: "159. 下列敘述何者不正確?", options: ["(A) DC馬達有速度調整(speed regulation)的特性。加上負荷時仍能維持它的轉速", "(B) 並激馬達(shunt-wound motor)上,磁場通量不受電流變化而形成的反電動勢影響,因此馬達具有較自然的速度調整(speed regulation)", "(C) 永磁馬達(PM馬達)的磁通量為一個與轉速無關的常數,因此扭矩速度的曲線相當線性", "(D) DC馬達轉矩和速度不可以用脈波寬度調幅(pulse-width modulation,PWM)方式控制"], ans: 3 },
     { q: "160. 機器人使用直流馬達控制時,可以使用下列何種驅動元件?", options: ["(A) LM318", "(B) FT5754", "(C) LM7912", "(D) LM7824"], ans: 1 },
     { q: "161. 下列事項無需在安裝機器人前依說明書確實查對?", options: ["(A) 額定搬運重量", "(B) 機器人構造(包括主要部分之名稱)及動作原理", "(C) 機器人價格", "(D) 噪音音壓級"], ans: 2 },
@@ -497,7 +501,8 @@
     { q: "256. 假設一關節由30度轉至60度,將其直線軌跡分成5個路徑點,轉速為10rpm,其每段所需的時間為多少秒?", options: ["(A) 3", "(B) 0.6", "(C) 1", "(D) 0.125"], ans: 3 },
     { q: "257. 下列分析方法何種可以判別非線性系統穩定性?", options: ["(A) 根軌跡(Root Locus)", "(B) 波德圖(Bode Plot)", "(C) 奈氏準則(Nyquist Criterion)", "(D) 李雅普諾夫穩定性準則(Lyapunov Stability Criterion)"], ans: 3 },
     { q: "258. 機械系統中的速度可以比擬成電路系統中的電流,力量可以比擬為電壓,請問機械系統中的阻尼相對於電路系統中的", options: ["(A) 電感", "(B) 電容", "(C) 電晶體", "(D) 電阻"], ans: 3 }
-        ];
+];
+
         let currentQuizSet = [];
         let currentIndex = 0;
         let userAnswers = {};   
@@ -511,7 +516,6 @@
         window.onload = function() {
             if(localStorage.getItem('hcvs_theme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
             
-            // 記憶功能判斷
             let hasHistory = localStorage.getItem('hcvs_has_active_quiz');
             
             if (hasHistory === 'true') {
@@ -545,7 +549,6 @@
             }
         };
 
-        // 計時器邏輯
         function startTimer() {
             timerInterval = setInterval(() => {
                 totalSeconds++;
@@ -560,12 +563,10 @@
             document.getElementById('timer-display').innerText = `${mins}:${secs}`;
         }
 
-        // 從首頁開始
         function startQuiz() {
             let selectVal = document.getElementById('quiz-num').value;
             let customVal = document.getElementById('custom-num').value;
             
-            // 如果有自訂數字就用自訂的，否則用下拉選單的
             let num = customVal ? parseInt(customVal) : parseInt(selectVal);
             
             if (num > questionBank.length) num = questionBank.length;
@@ -594,7 +595,6 @@
             startTimer();
         }
 
-        // 重置並退回首頁
         function resetQuiz() {
             if (!confirm("確定要重置測驗嗎？這將會清空所有歷史進度與計時器，並返回首頁！")) return;
 
@@ -611,7 +611,6 @@
             localStorage.removeItem('hcvs_timer_seconds');
             localStorage.removeItem('hcvs_is_submitted');
 
-            // 清空自訂輸入框
             document.getElementById('custom-num').value = '';
             document.getElementById('setup-screen').style.display = 'flex';
         }
@@ -706,6 +705,28 @@
             }
 
             updateGridStatus();
+        }
+
+        // ==========================================
+        // Google Sheets 回報功能邏輯
+        // ==========================================
+        function reportError() {
+            const qData = currentQuizSet[currentIndex];
+            if (!qData) return;
+            
+            let originalId = qData.q.match(/^\d+/)[0];
+            let pureQText = qData.q.replace(/^\d+\.\s*/, '');
+            
+            // 跳出對話框讓使用者輸入原因 (選填)
+            let reason = prompt(` 您即將回報【原題庫第 ${originalId} 題】\n\n題目預覽：${pureQText.substring(0, 20)}...\n\n如果有具體原因 (如: 選項錯字、答案給錯)，請在下方輸入後按確定，系統會幫您開新分頁前往表單。\n(若不想回報請按取消)`);
+            
+            if (reason !== null) { 
+                
+                let formUrl = `https://docs.google.com/forms/d/e/1FAIpQLSdbhLE_5m2wHknapDS176N-V5RW3JJwZse8EMjo967Xtk0P0w/viewform?usp=pp_url&entry.1177158450=原題庫第${originalId}題&entry.1960243392=${encodeURIComponent(reason)}`;
+                
+                // 開啟表單新分頁
+                window.open(formUrl, '_blank');
+            }
         }
 
         function updateStatsCounter() {
